@@ -1,0 +1,32 @@
+name: JEMP Trend Bot Scheduler
+
+on:
+  schedule:
+    # Esegue ogni lunedì alle 09:00 UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Permette l'avvio manuale dal sito GitHub tramite pulsante
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run JEMP Bot
+        env:
+          # Le chiavi non vanno nel codice, ma nei "Secrets" di GitHub
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: python main.py

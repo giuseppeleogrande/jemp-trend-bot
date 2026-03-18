@@ -1,0 +1,7 @@
+slack_sdk
+google-generativeai
+duckduckgo_search
+python-dotenv
+streamlit
+pyyaml
+PyGithub
