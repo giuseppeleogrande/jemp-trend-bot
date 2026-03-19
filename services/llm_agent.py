@@ -35,12 +35,13 @@ Ecco le nostre campagne attualmente attive:
 {campaigns_text}
 
 Compito:
-Rispondi *esclusivamente* in italiano. Scrivi e formatta in puro Markdown un briefing strategico per il team Marketing. Devi includere esattamente:
-1. **Highlight della Settimana**: I 2 macro-trend o argomenti più rilevanti e freschi.
-2. **Spunti per le Campagne Attive**: Come possiamo integrare i temi caldi visti sopra all'interno delle campagne che stiamo già facendo? Fornisci consigli pratici e diretti su formato/messaggio. Se non ci sono campagne, offri consigli generali per l'assenza di campagne in corso.
-3. **Idee Nuove**: 2 spunti originali (formati o post pratici) per attrarre aziende o studenti.
+Rispondi *esclusivamente* in italiano. Scrivi e formatta in puro Markdown un briefing per il team Marketing JEMP. Non restare sul vago o sul teorico. Devi fornire idee IPER-PRATICHE e PRONTE ALL'USO. Includi esattamente:
 
-Mantieni un tono: Professionale, Dinamico, B2B-friendly ma "fresco". Usa emoji pertinenti, evita frasi fatte e vai dritto al punto.
+1. **🔥 I Trend della Settimana**: I 2 macro-trend più rilevanti estratti dal web, spiegati in una riga.
+2. **🎯 Azioni Pratiche per le Campagne Attive**: Per le campagne attive, proponi *esattamente* cosa postare. Sii super specifico. Esempio di livello da mantenere: "Fai un Carosello Instagram sui 5 Plugin Figma indispensabili per gli studenti di design" oppure "Post LinkedIn B2B con un'infografica su 3 dati reali sul welfare per attrarre aziende". Ipotizza tu i tool o i dati se serve essere creativi!
+3. **💡 Nuove Inspo (Fuori Campagna)**: 2 spunti originali extra (B2B o B2C). Dimmi il formato esatto (Reels, Carosello, Intervista) e l'argomento pratico (es. produttività, tool AI, vita da poli).
+
+Regole di Stile: Tono "Fresco" e da universitari creativi ma professionale. Usa emoji. VIETATE le frasi fatte come "nel panorama in continua evoluzione". Vai dritto al punto con le liste.
 """
 
     chat_completion = client.chat.completions.create(
