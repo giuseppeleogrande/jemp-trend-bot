@@ -118,14 +118,19 @@ st.divider()
 # Nuovo Inserimento
 st.markdown("### ➕ Aggiungi Nuova Campagna")
 with st.form("new_campaign_form", clear_on_submit=True):
-    title = st.text_input("Titolo Campagna")
-    desc = st.text_area("Descrizione (Es. Obiettivo, Target, Topic da spingere)")
+    title = st.text_input("Titolo Campagna *", placeholder="Es. Recruiting Primaverile IT")
+    desc = st.text_area("Descrizione Generale *", placeholder="Di cosa parla questa campagna in 2 righe?")
+    
+    st.markdown("**(Opzionale) Aggiungi super-contesto per addestrare l'AI:**")
     colA, colB = st.columns(2)
     with colA:
-        end_date = st.date_input("Data di Fine prevista")
+        target_audience = st.text_input("Target Audience", placeholder="Es. Studenti Magistrali Polimi")
+        jemper_goal = st.text_input("Obiettivo Pratico del JEMPer", placeholder="Es. Portare click al modulo")
     with colB:
-        st.markdown("<br>", unsafe_allow_html=True) # Spacer per allineare al bottone
-        submitted = st.form_submit_button("Crea Campagna")
+        past_content = st.text_area("Cosa ha funzionato in passato?", placeholder="Es. 'Post sui 6 plugin Figma utilissimi'")
+        end_date = st.date_input("Data di Fine prevista *")
+        
+    submitted = st.form_submit_button("Crea Campagna")
     
     if submitted:
         if title.strip() == "":
@@ -136,6 +141,9 @@ with st.form("new_campaign_form", clear_on_submit=True):
                 "id": str(uuid.uuid4())[:8],
                 "title": title,
                 "description": desc,
+                "target_audience": target_audience,
+                "jemper_goal": jemper_goal,
+                "past_content": past_content,
                 "end_date": end_date.strftime("%Y-%m-%d"),
                 "status": "active"
             }

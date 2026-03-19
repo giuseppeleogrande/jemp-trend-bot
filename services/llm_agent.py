@@ -18,7 +18,15 @@ def generate_strategic_inspo(trends, active_campaigns):
     trends_text = "\n".join(trends_formatted)
     
     # Formatta le campagne
-    campaigns_text = "\n".join([f"- {c['title']} (Scadenza: {c['end_date']}): {c['description']}" for c in active_campaigns])
+    camp_list = []
+    for c in active_campaigns:
+        camp_str = f"[{c['title']}] Scadenza: {c['end_date']}\n- Descrizione: {c['description']}"
+        if c.get("target_audience"): camp_str += f"\n- Target Audience: {c['target_audience']}"
+        if c.get("jemper_goal"): camp_str += f"\n- Obiettivo JEMPer: {c['jemper_goal']}"
+        if c.get("past_content"): camp_str += f"\n- Contenuti Passati (Cosa ha funzionato in passato per questa campagna): {c['past_content']}"
+        camp_list.append(camp_str)
+        
+    campaigns_text = "\n\n".join(camp_list)
     if not campaigns_text.strip():
         campaigns_text = "Nessuna campagna attiva al momento."
 
