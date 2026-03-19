@@ -8,7 +8,7 @@ def generate_strategic_inspo(trends, active_campaigns):
         
     genai.configure(api_key=api_key)
     # Usa gemini-1.5-flash che è veloce, gratuito ed estremamente capace per task di sintesi e creatività
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.0-flash')
     
     # Formatta i trend testuali limitando un po' la base di testo per evitare confusione
     trends_formatted = []
