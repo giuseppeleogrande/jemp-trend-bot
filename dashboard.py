@@ -218,6 +218,6 @@ if st.button("🚀 Avvia Generazione Ora"):
             st.markdown(report)
             st.markdown("---")
         except ValueError as ve:
-            st.error(f"⚠️ **Errore:** {ve} (Assicurati di aver configurato la chiave API nel file .env!)")
+            st.error(f"⚠️ **Errore:** {ve} (Assicurati di aver configurato la chiave GROQ_API_KEY nel file .env!)")
         except Exception as e:
             st.error(f"❌ **Errore imprevisto:** {str(e)}")

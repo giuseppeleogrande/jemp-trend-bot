@@ -1,9 +1,16 @@
 [
     {
-        "id": "9fea5b54",
-        "title": "Recruitment Marzo2026",
-        "description": "",
-        "end_date": "2026-03-18",
-        "status": "completed"
+        "id": "a54fbbf1",
+        "title": "RECRUITMENT 2026",
+        "description": "L'obiettivo è coinvolgere studenti universitari del politecnico di Milano, in particolare designer e ingegneri informatici, in modo tale che comprendano il valore aggiunto di JEMP alla carriera universitaria. In JEMP si lavora su progetti reali con aziende e si potrebbero fare esempi di Brand Identity e Progetti piu tecnici come sull'intelligenza artificiale",
+        "end_date": "2026-03-29",
+        "status": "active"
+    },
+    {
+        "id": "fe21e7d1",
+        "title": "Campagna Divulgativa",
+        "description": "Il target sono sempre gli studenti universitari e in questa campagna puntiamo a dare tips relativi a strumenti che gli studenti possono ritenere interessanti, come nuovi strumenti o qualcosa per le posizioni entry level nel mondo del lavoro e nella consulenza",
+        "end_date": "2026-03-26",
+        "status": "active"
     }
 ]

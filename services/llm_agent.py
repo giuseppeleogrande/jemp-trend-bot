@@ -1,16 +1,15 @@
 import os
-import google.generativeai as genai
+from groq import Groq
 
 def generate_strategic_inspo(trends, active_campaigns):
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key or api_key == "your-gemini-key-here":
-        raise ValueError("GEMINI_API_KEY non configurata nel file .env")
+    # Passiamo a Groq (LLaMA-3) che non richiede carta di credito in Europa
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY non configurata nel file .env")
         
-    genai.configure(api_key=api_key)
-    # Usa gemini-1.5-flash che è veloce, gratuito ed estremamente capace per task di sintesi e creatività
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    client = Groq(api_key=api_key)
     
-    # Formatta i trend testuali limitando un po' la base di testo per evitare confusione
+    # Formatta i trend testuali
     trends_formatted = []
     for t in trends:
         title = t.get('title', 'Senza Titolo')
@@ -36,14 +35,17 @@ Ecco le nostre campagne attualmente attive:
 {campaigns_text}
 
 Compito:
-Scrivi e formatta in puro Markdown un briefing strategico per il team Marketing. Deve contenere esattamente:
+Rispondi *esclusivamente* in italiano. Scrivi e formatta in puro Markdown un briefing strategico per il team Marketing. Devi includere esattamente:
 1. **Highlight della Settimana**: I 2 macro-trend o argomenti più rilevanti e freschi.
-2. **Spunti per le Campagne Attive**: Come possiamo integrare i temi caldi visti sopra all'interno delle campagne che stiamo già facendo? Fornisci consigli pratici e diretti su formato/messaggio.
-3. **Idee Nuove (Instagram/LinkedIn)**: 2 spunti originali (non post pronti, ma format/argomenti) per attrarre aziende o studenti, sfruttando i trend analizzati.
+2. **Spunti per le Campagne Attive**: Come possiamo integrare i temi caldi visti sopra all'interno delle campagne che stiamo già facendo? Fornisci consigli pratici e diretti su formato/messaggio. Se non ci sono campagne, offri consigli generali per l'assenza di campagne in corso.
+3. **Idee Nuove**: 2 spunti originali (formati o post pratici) per attrarre aziende o studenti.
 
-Mantieni un tono: Professionale, Dinamico, B2B-friendly ma "fresco" da universitari tech/business. Usa emoji pertinenti, niente fluff.
-Sii analitico: se i trend trovati sono deboli, tira fuori intuizioni generali legate a quel mondo (gen z, IA, lavoro).
+Mantieni un tono: Professionale, Dinamico, B2B-friendly ma "fresco". Usa emoji pertinenti, evita frasi fatte e vai dritto al punto.
 """
 
-    response = model.generate_content(prompt)
-    return response.text
+    chat_completion = client.chat.completions.create(
+        messages=[{"role": "user", "content": prompt}],
+        model="llama3-70b-8192",
+    )
+    
+    return chat_completion.choices[0].message.content
