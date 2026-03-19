@@ -3,6 +3,11 @@ import json
 import os
 from datetime import datetime
 import uuid
+from dotenv import load_dotenv
+
+# Carica variabili da .env PRIMA di qualsiasi os.getenv()
+load_dotenv()
+
 try:
     from github import Github
 except ImportError:
@@ -190,3 +195,29 @@ else:
                 campaigns = [camp for camp in campaigns if camp['id'] != c['id']]
                 save_campaigns(campaigns)
                 st.rerun()
+
+st.divider()
+
+# Area di Testing AI
+st.markdown("### 🤖 Genera Report di Prova")
+st.markdown("Usa questo pulsante per simulare il lavoro del bot ora, senza mandare veri messaggi su Slack.")
+if st.button("🚀 Avvia Generazione Ora"):
+    with st.spinner("Scansione del web e ragionamento in corso... (può richiedere 15-30 secondi)"):
+        try:
+            from services.searcher import get_weekly_trends
+            from services.llm_agent import generate_strategic_inspo
+            
+            trends_test = get_weekly_trends()
+            camp_test = [c for c in campaigns if c.get("status") == "active"]
+            
+            # Genera la preview invocando il servizio LLM
+            report = generate_strategic_inspo(trends_test, camp_test)
+            
+            st.success("✅ Generazione completata!")
+            st.markdown("---")
+            st.markdown(report)
+            st.markdown("---")
+        except ValueError as ve:
+            st.error(f"⚠️ **Errore:** {ve} (Assicurati di aver configurato la chiave API nel file .env!)")
+        except Exception as e:
+            st.error(f"❌ **Errore imprevisto:** {str(e)}")
