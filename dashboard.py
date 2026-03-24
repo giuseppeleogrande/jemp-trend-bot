@@ -19,40 +19,65 @@ st.set_page_config(page_title="JEMP Campaign Dashboard", page_icon="🟡", layou
 
 def check_password():
     """Restituisce True se l'utente ha inserito la password corretta."""
-    def password_entered():
-        # Prende la password dal file .env (in locale) o dai Secrets (in Cloud)
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # CSS dedicato per la schermata di login
+    st.markdown("""
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&display=swap');
+        .stApp { background-color: #000000; }
+        .login-box {
+            max-width: 420px;
+            margin: 80px auto 0 auto;
+            padding: 40px 36px;
+            background-color: #191b20;
+            border-radius: 12px;
+            border-top: 4px solid #f28e00;
+            text-align: center;
+        }
+        .login-box h2 {
+            font-family: 'Barlow', sans-serif !important;
+            font-weight: 800 !important;
+            color: #f28e00 !important;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+        }
+        .login-box p {
+            color: #aaa9ac !important;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+        </style>
+        <div class="login-box">
+            <h2>🔐 JEMP Dashboard</h2>
+            <p>Area riservata ai JEMPer.<br>Inserisci la password per accedere.</p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Form con pulsante di invio
+    with st.form("login_form"):
+        password_input = st.text_input("Password", type="password", label_visibility="collapsed", placeholder="Inserisci la password...")
+        login_button = st.form_submit_button("Accedi")
+    
+    if login_button:
         expected_password = os.getenv("APP_PASSWORD")
         if not expected_password:
             try:
                 expected_password = st.secrets.get("APP_PASSWORD", "SuperJEMP2026!")
             except Exception:
                 expected_password = "SuperJEMP2026!"
-                
-        # Usa hmac per resistere agli attacchi di temporizzazione
-        if hmac.compare_digest(st.session_state["password"], expected_password):
+
+        if hmac.compare_digest(password_input, expected_password):
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Pulisce la memoria
+            st.rerun()
         else:
-            st.session_state["password_correct"] = False
-
-    if st.session_state.get("password_correct", False):
-        return True
-
-    # Schermata di Login
-    st.markdown("## 🔐 Area Riservata JEMP")
-    st.markdown("Questa dashboard esegue script di intelligenza artificiale aziendali. Inserisci la master password per proseguire.")
-    st.text_input(
-        "Password di Accesso", 
-        type="password", 
-        on_change=password_entered, 
-        key="password"
-    )
-    if "password_correct" in st.session_state:
-        st.error("❌ Password errata. Riprova.")
+            st.error("❌ Password errata. Riprova.")
+    
     return False
 
 if not check_password():
-    st.stop()  # Ferma totalmente l'esecuzione se non autenticato
+    st.stop()
 
 # --- INIZIO APP VERA E PROPRIA ---
 
