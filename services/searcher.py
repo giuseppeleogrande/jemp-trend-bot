@@ -1,7 +1,22 @@
 from ddgs import DDGS
 import time
 
-def get_weekly_trends():
+# Mapping tra label UI e timelimit DDGS
+TIMELIMIT_MAP = {
+    "Nessuna ricerca web": None,
+    "Ultime 24 ore": "d",
+    "Ultima settimana": "w",
+    "Ultimo mese": "m",
+}
+
+def get_weekly_trends(timelimit="w"):
+    """
+    Cerca le notizie più recenti sui temi rilevanti per JEMP.
+    timelimit: 'd' = giorno, 'w' = settimana, 'm' = mese, None = disabilitato
+    """
+    if timelimit is None:
+        return []
+
     queries = [
         "trend social media marketing linkedin instagram",
         "employer branding gen z recruiting mondo del lavoro",

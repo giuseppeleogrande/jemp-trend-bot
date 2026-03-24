@@ -1,12 +1,11 @@
 import streamlit as st
 import json
 import os
-from datetime import datetime
-import uuid
 import hmac
+import uuid
+from datetime import datetime
 from dotenv import load_dotenv
 
-# Carica variabili da .env PRIMA di qualsiasi os.getenv()
 load_dotenv()
 
 try:
@@ -14,340 +13,425 @@ try:
 except ImportError:
     Github = None
 
-# Configurazione Pagina
-st.set_page_config(page_title="JEMP Campaign Dashboard", page_icon="🟡", layout="centered")
+# ─────────────────────────────────────────────────────────────────────────────
+# PAGE CONFIG
+# ─────────────────────────────────────────────────────────────────────────────
+st.set_page_config(
+    page_title="JEMP Copilot",
+    page_icon="🟡",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# GLOBAL CSS (Brand Book 2024: #f28e00 yellow, Barlow, Source Serif)
+# ─────────────────────────────────────────────────────────────────────────────
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Source+Serif+4:wght@400;600&display=swap');
+
+/* Base */
+.stApp { background-color: #0a0a0a; color: #dbdcdb; font-family: 'Source Serif 4', Georgia, serif; }
+section[data-testid="stSidebar"] { background-color: #111111 !important; border-right: 1px solid #222; }
+
+/* Headings */
+h1,h2,h3,h4,h5 { font-family:'Barlow',sans-serif !important; font-weight:800 !important; color:#fff !important; }
+h1 { color:#f28e00 !important; font-size:1.6rem !important; }
+
+/* Sidebar items */
+.sidebar-section { font-family:'Barlow',sans-serif; font-size:0.72rem; font-weight:700;
+  color:#58575c; text-transform:uppercase; letter-spacing:1px; padding:16px 8px 4px; }
+.thread-btn { display:block; width:100%; text-align:left; background:none; border:none;
+  color:#aaa9ac; font-family:'Source Serif 4',Georgia,serif; font-size:0.88rem;
+  padding:8px 12px; cursor:pointer; border-radius:6px; transition:background 0.15s; }
+.thread-btn:hover { background:#1e1e1e; color:#fff; }
+.thread-btn.active { background:#1e1e1e; color:#f28e00 !important; border-left:3px solid #f28e00; }
+
+/* Buttons */
+.stButton>button { background:#f28e00 !important; color:#000 !important;
+  font-family:'Barlow',sans-serif !important; font-weight:700 !important;
+  border-radius:6px !important; border:none !important; box-shadow:none !important; }
+.stButton>button:hover { background:#f7aa01 !important; }
+button[kind="secondary"] { background:#191b20 !important; color:#dbdcdb !important; }
+
+/* Chat messages */
+div[data-testid="stChatMessage"] { border-radius:8px; }
+div[data-testid="stChatMessage"][data-role="user"] { background:#1a1a0a; }
+div[data-testid="stChatMessage"][data-role="assistant"] { background:#111518; }
+
+/* Inputs */
+div[data-baseweb="input"]>div, textarea {
+  background:#191b20 !important; color:#dbdcdb !important; border:1px solid #36373c !important; }
+input { font-family:'Source Serif 4',Georgia,serif !important; }
+
+/* Dividers */
+hr { border-color:#222 !important; }
+
+/* Campaign card */
+.campaign-card { background:#191b20; padding:18px 22px; border-radius:8px;
+  border-left:4px solid #f28e00; margin-bottom:14px; }
+.campaign-card h4 { color:#f28e00 !important; font-family:'Barlow',sans-serif !important;
+  font-weight:700 !important; margin-top:0; }
+.campaign-card p { color:#aaa9ac !important; margin:4px 0; }
+
+/* Form */
+.stSelectbox label, .stTextInput label, .stTextArea label {
+  font-family:'Barlow',sans-serif !important; font-weight:600 !important; color:#fff !important; }
+
+/* Chat input */
+div[data-testid="stChatInput"] textarea { background:#191b20 !important; }
+
+/* Selectbox */
+div[data-baseweb="select"] div { background:#191b20 !important; color:#dbdcdb !important; }
+</style>
+""", unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# LOGIN
+# ─────────────────────────────────────────────────────────────────────────────
 def check_password():
-    """Restituisce True se l'utente ha inserito la password corretta."""
     if st.session_state.get("password_correct", False):
         return True
 
-    # CSS dedicato per la schermata di login
     st.markdown("""
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&display=swap');
-        .stApp { background-color: #000000; }
-        .login-box {
-            max-width: 420px;
-            margin: 80px auto 0 auto;
-            padding: 40px 36px;
-            background-color: #191b20;
-            border-radius: 12px;
-            border-top: 4px solid #f28e00;
-            text-align: center;
-        }
-        .login-box h2 {
-            font-family: 'Barlow', sans-serif !important;
-            font-weight: 800 !important;
-            color: #f28e00 !important;
-            margin-bottom: 8px;
-            font-size: 1.8rem;
-        }
-        .login-box p {
-            color: #aaa9ac !important;
-            font-size: 0.95rem;
-            margin-bottom: 24px;
-        }
-        </style>
-        <div class="login-box">
-            <h2>🔐 JEMP Dashboard</h2>
-            <p>Area riservata ai JEMPer.<br>Inserisci la password per accedere.</p>
-        </div>
+    <style>
+    .stApp { background:#000; }
+    .login-wrap { max-width:400px; margin:80px auto 0; padding:40px 36px;
+      background:#191b20; border-radius:12px; border-top:4px solid #f28e00; text-align:center; }
+    .login-wrap h2 { font-family:'Barlow',sans-serif; font-weight:800;
+      color:#f28e00 !important; font-size:2rem; margin-bottom:6px; }
+    .login-wrap p { color:#7e7d81 !important; font-size:0.95rem; margin-bottom:20px; }
+    </style>
+    <div class="login-wrap">
+      <h2>JEMP Copilot</h2>
+      <p>Area riservata JEMPer.<br>Inserisci la password per accedere.</p>
+    </div>
     """, unsafe_allow_html=True)
 
-    # Form con pulsante di invio
     with st.form("login_form"):
-        password_input = st.text_input("Password", type="password", label_visibility="collapsed", placeholder="Inserisci la password...")
-        login_button = st.form_submit_button("Accedi")
-    
-    if login_button:
-        expected_password = os.getenv("APP_PASSWORD")
-        if not expected_password:
-            try:
-                expected_password = st.secrets.get("APP_PASSWORD", "SuperJEMP2026!")
-            except Exception:
-                expected_password = "SuperJEMP2026!"
+        pwd = st.text_input("Password", type="password",
+                            label_visibility="collapsed", placeholder="Password...")
+        submitted = st.form_submit_button("Accedi", use_container_width=True)
 
-        if hmac.compare_digest(password_input, expected_password):
+    if submitted:
+        expected = os.getenv("APP_PASSWORD") or ""
+        if not expected:
+            try: expected = st.secrets.get("APP_PASSWORD", "SuperJEMP2026!")
+            except: expected = "SuperJEMP2026!"
+        if hmac.compare_digest(pwd, expected):
             st.session_state["password_correct"] = True
             st.rerun()
         else:
-            st.error("❌ Password errata. Riprova.")
-    
+            st.error("❌ Password errata.")
     return False
 
 if not check_password():
     st.stop()
 
-# --- INIZIO APP VERA E PROPRIA ---
-
-# Branding JEMP (Brand Book 2024 - Palette Ufficiale)
-# Giallo: #f28e00, Arancio (accenti): #f28e00, Nero: #000000
-# Grigi: #191b20, #36373c, #58575c, #7e7d81, #aaa9ac, #dbdcdb
-# Font: Barlow (headings), Source Serif Pro (body)
-st.markdown("""
-    <style>
-    /* === GOOGLE FONTS === */
-    @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Source+Serif+4:wght@400;600&display=swap');
-
-    /* === SFONDO E TESTO === */
-    .stApp {
-        background-color: #000000;
-        color: #dbdcdb;
-        font-family: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
-    }
-
-    /* === TIPOGRAFIA (Barlow per titoli) === */
-    h1, h2, h3, h4, h5 {
-        font-family: 'Barlow', sans-serif !important;
-        font-weight: 800 !important;
-        color: #ffffff !important;
-        letter-spacing: -0.5px;
-    }
-    h1 { color: #f28e00 !important; }
-    p, label, span, li {
-        font-family: 'Source Serif 4', Georgia, serif !important;
-        color: #dbdcdb !important;
-    }
-
-    /* === INPUT E FORM === */
-    div[data-baseweb="input"] > div {
-        background-color: #191b20;
-        color: #dbdcdb;
-        border: 1px solid #36373c;
-        border-radius: 6px;
-    }
-    textarea {
-        background-color: #191b20 !important;
-        color: #dbdcdb !important;
-        border: 1px solid #36373c !important;
-        border-radius: 6px !important;
-        font-family: 'Source Serif 4', Georgia, serif !important;
-    }
-    input {
-        font-family: 'Source Serif 4', Georgia, serif !important;
-    }
-    
-    /* === BOTTONI GIALLI (Flat, no shadow) === */
-    .stButton>button {
-        background-color: #f28e00;
-        color: #000000;
-        font-family: 'Barlow', sans-serif;
-        font-weight: 700;
-        border-radius: 6px;
-        border: none;
-        box-shadow: none;
-        transition: background-color 0.2s ease;
-    }
-    .stButton>button:hover {
-        background-color: #f7aa01;
-        color: #000000;
-        box-shadow: none;
-    }
-    .stButton>button:active {
-        background-color: #f49c02;
-        color: #000000;
-    }
-
-    /* === CARD CAMPAGNE === */
-    .campaign-card {
-        background-color: #191b20;
-        padding: 20px 24px;
-        border-radius: 8px;
-        border-left: 4px solid #f28e00;
-        margin-bottom: 16px;
-    }
-    .campaign-card h4 {
-        color: #f28e00 !important;
-        margin-top: 0;
-        font-family: 'Barlow', sans-serif !important;
-        font-weight: 700 !important;
-    }
-    .campaign-card p {
-        color: #aaa9ac !important;
-    }
-    
-    /* === DIVIDER === */
-    hr {
-        border-color: #36373c !important;
-    }
-
-    /* === SPINNER & MESSAGGI === */
-    .stSpinner > div {
-        border-top-color: #f28e00 !important;
-    }
-    .stAlert {
-        border-radius: 6px;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-DATA_FILE = "active_campaigns.json"
+# ─────────────────────────────────────────────────────────────────────────────
+# DATA LAYER (GitHub or local)
+# ─────────────────────────────────────────────────────────────────────────────
+CAMPAIGNS_FILE = "active_campaigns.json"
+THREADS_FILE = "chat_threads.json"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_REPO = os.getenv("GITHUB_REPO") # es. jemp-polimi/jemp-trend-bot
+GITHUB_REPO = os.getenv("GITHUB_REPO")
 
-def load_campaigns():
+def _gh_repo():
     if GITHUB_TOKEN and GITHUB_REPO and Github:
+        return Github(GITHUB_TOKEN).get_repo(GITHUB_REPO)
+    return None
+
+def _load_json(filename, default):
+    repo = _gh_repo()
+    if repo:
         try:
-            g = Github(GITHUB_TOKEN)
-            repo = g.get_repo(GITHUB_REPO)
-            content = repo.get_contents(DATA_FILE)
-            return json.loads(content.decoded_content.decode('utf-8'))
-        except Exception as e:
-            st.warning(f"Errore lettura GitHub, fallback locale. {e}")
+            content = repo.get_contents(filename)
+            return json.loads(content.decoded_content.decode("utf-8"))
+        except Exception:
             pass
-
-    if not os.path.exists(DATA_FILE):
-        return []
-    with open(DATA_FILE, "r", encoding='utf-8') as f:
+    if os.path.exists(filename):
         try:
-            return json.load(f)
-        except:
-            return []
+            with open(filename, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return default
 
-def save_campaigns(campaigns):
-    content_str = json.dumps(campaigns, indent=4, ensure_ascii=False)
-    
-    # Salva sempre in remoto se configurato
-    if GITHUB_TOKEN and GITHUB_REPO and Github:
+def _save_json(filename, data):
+    content_str = json.dumps(data, indent=2, ensure_ascii=False)
+    repo = _gh_repo()
+    if repo:
         try:
-            g = Github(GITHUB_TOKEN)
-            repo = g.get_repo(GITHUB_REPO)
             try:
-                file_info = repo.get_contents(DATA_FILE)
-                repo.update_file(file_info.path, "Automazione: Dashboard update", content_str, file_info.sha)
-            except:
-                repo.create_file(DATA_FILE, "Automazione: Dashboard create", content_str)
+                fi = repo.get_contents(filename)
+                repo.update_file(fi.path, f"Copilot: update {filename}", content_str, fi.sha)
+            except Exception:
+                repo.create_file(filename, f"Copilot: create {filename}", content_str)
         except Exception as e:
             st.error(f"Impossibile salvare su GitHub: {e}")
-            
-    # Salva sempre anche in locale a prescindere
-    with open(DATA_FILE, "w", encoding='utf-8') as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(content_str)
 
-# Header
-col1, col2 = st.columns([1, 4])
-with col1:
-    logo_path = os.path.join("assets", "jemp_logo.png")
-    if os.path.exists(logo_path):
-        st.image(logo_path, use_container_width=True)
-with col2:
-    st.title("JEMP Trend & Inspo")
-    st.subheader("Gestione Campagne Attive")
+def load_campaigns():   return _load_json(CAMPAIGNS_FILE, [])
+def save_campaigns(d):  _save_json(CAMPAIGNS_FILE, d)
+def load_threads():     return _load_json(THREADS_FILE, [])
+def save_threads(d):    _save_json(THREADS_FILE, d)
 
-st.divider()
+# ─────────────────────────────────────────────────────────────────────────────
+# SESSION STATE INIT
+# ─────────────────────────────────────────────────────────────────────────────
+if "page" not in st.session_state:
+    st.session_state["page"] = "chat_new"      # "dashboard" | "chat_new" | "chat_<id>"
+if "chat_messages" not in st.session_state:
+    st.session_state["chat_messages"] = []
+if "active_thread_id" not in st.session_state:
+    st.session_state["active_thread_id"] = None
 
-# Nuovo Inserimento
-st.markdown("### ➕ Aggiungi Nuova Campagna")
-with st.form("new_campaign_form", clear_on_submit=True):
-    title = st.text_input("Titolo Campagna *", placeholder="Es. Recruiting Primaverile IT")
-    desc = st.text_area("Descrizione Generale *", placeholder="Di cosa parla questa campagna in 2 righe?")
-    
-    st.markdown("**(Opzionale) Aggiungi super-contesto per addestrare l'AI:**")
-    colA, colB = st.columns(2)
-    with colA:
-        target_audience = st.text_input("Target Audience", placeholder="Es. Studenti Magistrali Polimi")
-        jemper_goal = st.text_input("Obiettivo Pratico del JEMPer", placeholder="Es. Portare click al modulo")
-    with colB:
-        past_content = st.text_area("Cosa ha funzionato in passato?", placeholder="Es. 'Post sui 6 plugin Figma utilissimi'")
-        end_date = st.date_input("Data di Fine prevista *")
-        
-    submitted = st.form_submit_button("Crea Campagna")
-    
-    if submitted:
-        if title.strip() == "":
-            st.error("Il titolo non può essere vuoto!")
-        else:
-            campaigns = load_campaigns()
-            new_camp = {
-                "id": str(uuid.uuid4())[:8],
-                "title": title,
-                "description": desc,
-                "target_audience": target_audience,
-                "jemper_goal": jemper_goal,
-                "past_content": past_content,
-                "end_date": end_date.strftime("%Y-%m-%d"),
-                "status": "active"
-            }
-            campaigns.append(new_camp)
-            save_campaigns(campaigns)
-            st.success("Campagna aggiunta con successo!")
-            st.rerun()
+# ─────────────────────────────────────────────────────────────────────────────
+# SIDEBAR
+# ─────────────────────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("""
+    <div style="padding:16px 8px 8px;display:flex;align-items:center;gap:10px;">
+      <span style="font-family:'Barlow',sans-serif;font-size:1.4rem;font-weight:800;color:#f28e00;">JEMP</span>
+      <span style="font-family:'Source Serif 4',serif;color:#7e7d81;font-size:0.9rem;">Copilot</span>
+    </div>
+    """, unsafe_allow_html=True)
 
-st.divider()
+    st.divider()
 
-# Lista Campagne
-st.markdown("### 📋 Campagne In Corso")
-campaigns = load_campaigns()
-active_campaigns = [c for c in campaigns if c.get("status") == "active"]
+    # New Chat button
+    if st.button("💬 Nuova Chat", use_container_width=True):
+        st.session_state["page"] = "chat_new"
+        st.session_state["chat_messages"] = []
+        st.session_state["active_thread_id"] = None
+        st.rerun()
 
-if not active_campaigns:
-    st.info("Nessuna campagna attiva al momento.")
-else:
-    for c in active_campaigns:
-        with st.container():
-            st.markdown(f"""
-            <div class="campaign-card">
-                <h4>{c['title']}</h4>
-                <p><strong>Scadenza:</strong> {c['end_date']}</p>
-                <p>{c['description']}</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Pulsante per terminare la campagna
-            if st.button(f"Termina Campagna '{c['title']}'", key=f"del_{c['id']}"):
-                for idx, camp in enumerate(campaigns):
-                    if camp['id'] == c['id']:
-                        campaigns[idx]['status'] = "completed"
-                save_campaigns(campaigns)
+    # Dashboard Campagne button
+    st.markdown("")
+    if st.button("📊 Dashboard Campagne", use_container_width=True):
+        st.session_state["page"] = "dashboard"
+        st.rerun()
+
+    # Thread history
+    threads = load_threads()
+    if threads:
+        st.markdown('<div class="sidebar-section">Thread Recenti</div>', unsafe_allow_html=True)
+        for t in reversed(threads[-20:]):   # mostra gli ultimi 20
+            is_active = st.session_state.get("active_thread_id") == t["id"]
+            label = t.get("title", "Chat senza titolo")
+            label_short = label[:34] + "…" if len(label) > 35 else label
+            btn_style = "active" if is_active else ""
+            # Usiamo un pulsante custom via markdown + form trick
+            if st.button(f"🧵 {label_short}", key=f"thread_{t['id']}", use_container_width=True):
+                st.session_state["page"] = f"chat_{t['id']}"
+                st.session_state["active_thread_id"] = t["id"]
+                st.session_state["chat_messages"] = t.get("messages", [])
                 st.rerun()
 
-st.divider()
+# ─────────────────────────────────────────────────────────────────────────────
+# DASHBOARD CAMPAGNE PAGE
+# ─────────────────────────────────────────────────────────────────────────────
+def render_dashboard():
+    st.markdown("## 📊 Dashboard Campagne")
+    st.markdown("Gestisci i brief delle campagne attive. L'AI li userà come contesto nelle chat.")
+    st.divider()
 
-# Lista Campagne Archiviate (Terminate)
-st.markdown("### 🗄️ Archivio Storico")
-archived_campaigns = [c for c in campaigns if c.get("status") == "completed"]
-
-if not archived_campaigns:
-    st.info("Nessuna campagna in archivio.")
-else:
-    for c in archived_campaigns:
-        with st.container():
-            st.markdown(f"""
-            <div class="campaign-card" style="border-left: 5px solid #555555; opacity: 0.7;">
-                <h5 style="color: #999999 !important; margin-top: 0;"><del>{c['title']}</del></h5>
-                <p style="font-size: 0.9em; color: #bbbbbb;"><strong>Scadenza originale:</strong> {c['end_date']}</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Pulsante per eliminare definitivamente
-            if st.button(f"❌ Elimina definitivamente '{c['title']}'", key=f"perm_del_{c['id']}"):
-                campaigns = [camp for camp in campaigns if camp['id'] != c['id']]
-                save_campaigns(campaigns)
+    # Form nuova campagna
+    st.markdown("### ➕ Aggiungi Nuova Campagna")
+    with st.form("new_campaign_form", clear_on_submit=True):
+        title = st.text_input("Titolo Campagna *", placeholder="Es. Recruiting Primaverile IT")
+        desc = st.text_area("Descrizione *", placeholder="Di cosa parla questa campagna?")
+        st.markdown("**Contesto per l'AI (facoltativo):**")
+        colA, colB = st.columns(2)
+        with colA:
+            target = st.text_input("Target Audience", placeholder="Es. Studenti Magistrali Polimi")
+            goal = st.text_input("Obiettivo Pratico", placeholder="Es. Portare click al modulo")
+        with colB:
+            past = st.text_area("Cosa ha funzionato in passato?", placeholder="Es. Post sui 6 Plugin Figma")
+            end_date = st.date_input("Scadenza prevista *")
+        if st.form_submit_button("Crea Campagna"):
+            if not title.strip():
+                st.error("Il titolo non può essere vuoto!")
+            else:
+                camps = load_campaigns()
+                camps.append({
+                    "id": str(uuid.uuid4())[:8], "title": title,
+                    "description": desc, "target_audience": target,
+                    "jemper_goal": goal, "past_content": past,
+                    "end_date": end_date.strftime("%Y-%m-%d"), "status": "active"
+                })
+                save_campaigns(camps)
+                st.success("✅ Campagna aggiunta!")
                 st.rerun()
 
-st.divider()
+    st.divider()
+    camps = load_campaigns()
 
-# Area di Testing AI
-st.markdown("### 🤖 Genera Report di Prova")
-st.markdown("Usa questo pulsante per simulare il lavoro del bot ora, senza mandare veri messaggi su Slack.")
-if st.button("🚀 Avvia Generazione Ora"):
-    with st.spinner("Scansione del web e ragionamento in corso... (può richiedere 15-30 secondi)"):
-        try:
-            from services.searcher import get_weekly_trends
-            from services.llm_agent import generate_strategic_inspo
-            
-            trends_test = get_weekly_trends()
-            camp_test = [c for c in campaigns if c.get("status") == "active"]
-            
-            # Genera la preview invocando il servizio LLM
-            report = generate_strategic_inspo(trends_test, camp_test)
-            
-            st.success("✅ Generazione completata!")
-            st.markdown("---")
-            st.markdown(report)
-            st.markdown("---")
-        except ValueError as ve:
-            st.error(f"⚠️ **Errore:** {ve} (Assicurati di aver configurato la chiave GROQ_API_KEY nel file .env!)")
-        except Exception as e:
-            st.error(f"❌ **Errore imprevisto:** {str(e)}")
+    # Attive
+    st.markdown("### 📋 Campagne In Corso")
+    active = [c for c in camps if c.get("status") == "active"]
+    if not active:
+        st.info("Nessuna campagna attiva.")
+    for c in active:
+        st.markdown(f"""<div class="campaign-card">
+            <h4>{c['title']}</h4>
+            <p><strong>Scadenza:</strong> {c['end_date']}</p>
+            <p>{c.get('description','')}</p>
+        </div>""", unsafe_allow_html=True)
+        if st.button(f"✅ Termina '{c['title']}'", key=f"end_{c['id']}"):
+            for idx, x in enumerate(camps):
+                if x["id"] == c["id"]: camps[idx]["status"] = "completed"
+            save_campaigns(camps); st.rerun()
+
+    st.divider()
+
+    # Archivio
+    archived = [c for c in camps if c.get("status") == "completed"]
+    with st.expander(f"🗄️ Archivio Storico ({len(archived)})"):
+        if not archived:
+            st.info("Nessuna campagna archiviata.")
+        for c in archived:
+            st.markdown(f"""<div class="campaign-card" style="border-left-color:#36373c;opacity:.7;">
+                <h4 style="color:#7e7d81!important;"><del>{c['title']}</del></h4>
+                <p>Scadenza originale: {c['end_date']}</p>
+            </div>""", unsafe_allow_html=True)
+            if st.button(f"🗑 Elimina definitivamente", key=f"del_{c['id']}"):
+                camps = [x for x in camps if x["id"] != c["id"]]
+                save_campaigns(camps); st.rerun()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CHAT PAGE
+# ─────────────────────────────────────────────────────────────────────────────
+def render_chat():
+    from services.searcher import get_weekly_trends, TIMELIMIT_MAP
+    from services.llm_agent import chat_with_jemp_bot
+
+    camps = load_campaigns()
+    active_camps = [c for c in camps if c.get("status") == "active"]
+    camp_options = ["— Nessuna campagna specifica —"] + [c["title"] for c in active_camps]
+    time_options = list(TIMELIMIT_MAP.keys())
+
+    # ---- Header selectors ----
+    col1, col2 = st.columns([3, 2])
+    with col1:
+        st.markdown("## 💬 JEMP Copilot")
+    with col2:
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+
+    sel_col1, sel_col2 = st.columns(2)
+    with sel_col1:
+        selected_camp_title = st.selectbox(
+            "🎯 Campagna di contesto",
+            camp_options,
+            key="chat_camp_select",
+            help="L'AI tratterà questa campagna come contesto invisibile."
+        )
+    with sel_col2:
+        selected_time_label = st.selectbox(
+            "🌐 Web Scraping",
+            time_options,
+            index=2,   # default "Ultima settimana"
+            key="chat_time_select",
+            help="Vuoi che l'AI ricerca le notizie più recenti prima di rispondere?"
+        )
+
+    selected_campaign = next((c for c in active_camps if c["title"] == selected_camp_title), None)
+    timelimit = TIMELIMIT_MAP[selected_time_label]
+
+    st.divider()
+
+    # ---- Messages ----
+    messages = st.session_state.get("chat_messages", [])
+
+    if not messages:
+        st.markdown("""
+        <div style="text-align:center;padding:60px 20px;color:#36373c;">
+          <div style="font-size:3rem;">🟡</div>
+          <div style="font-family:'Barlow',sans-serif;font-size:1.2rem;font-weight:700;color:#58575c;margin-top:12px;">
+            Ciao JEMPer! Dimmi come posso aiutarti oggi.
+          </div>
+          <div style="font-size:0.9rem;color:#36373c;margin-top:8px;">
+            Puoi chiedermi idee per post, analisi di trend, copy da LinkedIn, strategie per le campagne attive e molto altro.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    for msg in messages:
+        with st.chat_message(msg["role"], avatar="🟡" if msg["role"] == "assistant" else "👤"):
+            st.markdown(msg["content"])
+
+    # ---- Input ----
+    prompt = st.chat_input("Chiedi qualcosa a JEMP Copilot...")
+
+    if prompt:
+        messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user", avatar="👤"):
+            st.markdown(prompt)
+
+        # Scarica trend se necessario
+        trends = []
+        if timelimit is not None:
+            with st.spinner(f"🌐 Ricerca web in corso ({selected_time_label.lower()})..."):
+                try:
+                    trends = get_weekly_trends(timelimit=timelimit)
+                except Exception as e:
+                    st.warning(f"Ricerca web non riuscita: {e}. Continuo senza dati web.")
+
+        # AI response
+        with st.chat_message("assistant", avatar="🟡"):
+            with st.spinner("JEMP Copilot sta pensando…"):
+                try:
+                    reply = chat_with_jemp_bot(messages, campaign=selected_campaign, trends=trends)
+                except ValueError as ve:
+                    reply = f"⚠️ **Errore di configurazione:** {ve}"
+                except Exception as e:
+                    reply = f"❌ **Errore:** {e}"
+            st.markdown(reply)
+
+        messages.append({"role": "assistant", "content": reply})
+        st.session_state["chat_messages"] = messages
+
+        # Salva/aggiorna thread
+        _save_thread(messages, selected_camp_title)
+        st.rerun()
+
+def _save_thread(messages, camp_title):
+    """Salva o aggiorna il thread corrente."""
+    threads = load_threads()
+    tid = st.session_state.get("active_thread_id")
+
+    # Genera titolo automatico dal primo messaggio utente
+    first_user = next((m["content"] for m in messages if m["role"] == "user"), "Chat")
+    auto_title = first_user[:50]
+    if camp_title and "Nessuna" not in camp_title:
+        auto_title = f"[{camp_title}] {auto_title}"
+
+    if tid:
+        # Aggiorna thread esistente
+        for t in threads:
+            if t["id"] == tid:
+                t["messages"] = messages
+                t["updated_at"] = datetime.now().isoformat()
+                break
+    else:
+        # Crea nuovo thread
+        tid = str(uuid.uuid4())[:8]
+        st.session_state["active_thread_id"] = tid
+        threads.append({
+            "id": tid, "title": auto_title,
+            "messages": messages, "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat()
+        })
+
+    save_threads(threads)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTER
+# ─────────────────────────────────────────────────────────────────────────────
+page = st.session_state.get("page", "chat_new")
+
+if page == "dashboard":
+    render_dashboard()
+else:
+    render_chat()
