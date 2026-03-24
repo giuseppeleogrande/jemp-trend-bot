@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 import uuid
+import hmac
 from dotenv import load_dotenv
 
 # Carica variabili da .env PRIMA di qualsiasi os.getenv()
@@ -15,6 +16,45 @@ except ImportError:
 
 # Configurazione Pagina
 st.set_page_config(page_title="JEMP Campaign Dashboard", page_icon="🟡", layout="centered")
+
+def check_password():
+    """Restituisce True se l'utente ha inserito la password corretta."""
+    def password_entered():
+        # Prende la password dal file .env (in locale) o dai Secrets (in Cloud)
+        expected_password = os.getenv("APP_PASSWORD")
+        if not expected_password:
+            try:
+                expected_password = st.secrets.get("APP_PASSWORD", "SuperJEMP2026!")
+            except Exception:
+                expected_password = "SuperJEMP2026!"
+                
+        # Usa hmac per resistere agli attacchi di temporizzazione
+        if hmac.compare_digest(st.session_state["password"], expected_password):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Pulisce la memoria
+        else:
+            st.session_state["password_correct"] = False
+
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # Schermata di Login
+    st.markdown("## 🔐 Area Riservata JEMP")
+    st.markdown("Questa dashboard esegue script di intelligenza artificiale aziendali. Inserisci la master password per proseguire.")
+    st.text_input(
+        "Password di Accesso", 
+        type="password", 
+        on_change=password_entered, 
+        key="password"
+    )
+    if "password_correct" in st.session_state:
+        st.error("❌ Password errata. Riprova.")
+    return False
+
+if not check_password():
+    st.stop()  # Ferma totalmente l'esecuzione se non autenticato
+
+# --- INIZIO APP VERA E PROPRIA ---
 
 # Branding JEMP (Nero e Giallo #FFD100)
 st.markdown("""
