@@ -56,46 +56,103 @@ if not check_password():
 
 # --- INIZIO APP VERA E PROPRIA ---
 
-# Branding JEMP (Nero e Giallo #FFD100)
+# Branding JEMP (Brand Book 2024 - Palette Ufficiale)
+# Giallo: #f28e00, Arancio (accenti): #f28e00, Nero: #000000
+# Grigi: #191b20, #36373c, #58575c, #7e7d81, #aaa9ac, #dbdcdb
+# Font: Barlow (headings), Source Serif Pro (body)
 st.markdown("""
     <style>
-    /* Sfondo nero */
+    /* === GOOGLE FONTS === */
+    @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Source+Serif+4:wght@400;600&display=swap');
+
+    /* === SFONDO E TESTO === */
     .stApp {
         background-color: #000000;
-        color: #FFFFFF;
+        color: #dbdcdb;
+        font-family: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
     }
-    /* Stile testo input e forme */
+
+    /* === TIPOGRAFIA (Barlow per titoli) === */
+    h1, h2, h3, h4, h5 {
+        font-family: 'Barlow', sans-serif !important;
+        font-weight: 800 !important;
+        color: #ffffff !important;
+        letter-spacing: -0.5px;
+    }
+    h1 { color: #f28e00 !important; }
+    p, label, span, li {
+        font-family: 'Source Serif 4', Georgia, serif !important;
+        color: #dbdcdb !important;
+    }
+
+    /* === INPUT E FORM === */
     div[data-baseweb="input"] > div {
-        background-color: #1a1a1a;
-        color: white;
+        background-color: #191b20;
+        color: #dbdcdb;
+        border: 1px solid #36373c;
+        border-radius: 6px;
     }
     textarea {
-        background-color: #1a1a1a !important;
-        color: white !important;
+        background-color: #191b20 !important;
+        color: #dbdcdb !important;
+        border: 1px solid #36373c !important;
+        border-radius: 6px !important;
+        font-family: 'Source Serif 4', Georgia, serif !important;
     }
-    /* Bottoni principali gialli */
+    input {
+        font-family: 'Source Serif 4', Georgia, serif !important;
+    }
+    
+    /* === BOTTONI GIALLI (Flat, no shadow) === */
     .stButton>button {
-        background-color: #FFD100;
+        background-color: #f28e00;
         color: #000000;
-        font-weight: bold;
-        border-radius: 8px;
+        font-family: 'Barlow', sans-serif;
+        font-weight: 700;
+        border-radius: 6px;
         border: none;
+        box-shadow: none;
+        transition: background-color 0.2s ease;
     }
     .stButton>button:hover {
-        background-color: #e6bc00;
+        background-color: #f7aa01;
+        color: #000000;
+        box-shadow: none;
+    }
+    .stButton>button:active {
+        background-color: #f49c02;
         color: #000000;
     }
-    /* Forza testo globale al bianco */
-    h1, h2, h3, p, label {
-        color: #FFFFFF !important;
-    }
-    /* Card per la campagna */
+
+    /* === CARD CAMPAGNE === */
     .campaign-card {
-        background-color: #1a1a1a;
-        padding: 20px;
-        border-radius: 10px;
-        border-left: 5px solid #FFD100;
-        margin-bottom: 20px;
+        background-color: #191b20;
+        padding: 20px 24px;
+        border-radius: 8px;
+        border-left: 4px solid #f28e00;
+        margin-bottom: 16px;
+    }
+    .campaign-card h4 {
+        color: #f28e00 !important;
+        margin-top: 0;
+        font-family: 'Barlow', sans-serif !important;
+        font-weight: 700 !important;
+    }
+    .campaign-card p {
+        color: #aaa9ac !important;
+    }
+    
+    /* === DIVIDER === */
+    hr {
+        border-color: #36373c !important;
+    }
+
+    /* === SPINNER & MESSAGGI === */
+    .stSpinner > div {
+        border-top-color: #f28e00 !important;
+    }
+    .stAlert {
+        border-radius: 6px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -206,7 +263,7 @@ else:
         with st.container():
             st.markdown(f"""
             <div class="campaign-card">
-                <h4 style="color: #FFD100 !important; margin-top: 0;">{c['title']}</h4>
+                <h4>{c['title']}</h4>
                 <p><strong>Scadenza:</strong> {c['end_date']}</p>
                 <p>{c['description']}</p>
             </div>
