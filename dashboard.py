@@ -227,6 +227,11 @@ with st.sidebar:
                 st.session_state["page"] = f"chat_{t['id']}"
                 st.session_state["active_thread_id"] = t["id"]
                 st.session_state["chat_messages"] = t.get("messages", [])
+                # Ripristina contesto campagna e timing salvati nel thread
+                if t.get("camp_title"):
+                    st.session_state["thread_camp"] = t["camp_title"]
+                if t.get("time_label"):
+                    st.session_state["thread_time"] = t["time_label"]
                 st.rerun()
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -319,11 +324,18 @@ def render_chat():
     with col2:
         st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
+    # Calcola l'index corretto per i selectbox (ripristino da thread salvato)
+    saved_camp   = st.session_state.get("thread_camp", None)
+    saved_time   = st.session_state.get("thread_time", None)
+    camp_idx  = camp_options.index(saved_camp) if saved_camp in camp_options else 0
+    time_idx  = time_options.index(saved_time) if saved_time in time_options else 2
+
     sel_col1, sel_col2 = st.columns(2)
     with sel_col1:
         selected_camp_title = st.selectbox(
             "🎯 Campagna di contesto",
             camp_options,
+            index=camp_idx,
             key="chat_camp_select",
             help="L'AI tratterà questa campagna come contesto invisibile."
         )
@@ -331,10 +343,14 @@ def render_chat():
         selected_time_label = st.selectbox(
             "🌐 Web Scraping",
             time_options,
-            index=2,   # default "Ultima settimana"
+            index=time_idx,
             key="chat_time_select",
             help="Vuoi che l'AI ricerca le notizie più recenti prima di rispondere?"
         )
+
+    # Reset dei valori ripristino dopo il primo render (evita override permanente)
+    st.session_state.pop("thread_camp", None)
+    st.session_state.pop("thread_time", None)
 
     selected_campaign = next((c for c in active_camps if c["title"] == selected_camp_title), None)
     timelimit = TIMELIMIT_MAP[selected_time_label]
@@ -392,12 +408,12 @@ def render_chat():
         messages.append({"role": "assistant", "content": reply})
         st.session_state["chat_messages"] = messages
 
-        # Salva/aggiorna thread
-        _save_thread(messages, selected_camp_title)
+        # Salva/aggiorna thread (con contesto campagna e timing)
+        _save_thread(messages, selected_camp_title, selected_time_label)
         st.rerun()
 
-def _save_thread(messages, camp_title):
-    """Salva o aggiorna il thread corrente."""
+def _save_thread(messages, camp_title, time_label="Ultima settimana"):
+    """Salva o aggiorna il thread corrente — include campagna e timelimit."""
     threads = load_threads()
     tid = st.session_state.get("active_thread_id")
 
@@ -408,19 +424,22 @@ def _save_thread(messages, camp_title):
         auto_title = f"[{camp_title}] {auto_title}"
 
     if tid:
-        # Aggiorna thread esistente
         for t in threads:
             if t["id"] == tid:
-                t["messages"] = messages
+                t["messages"]   = messages
+                t["camp_title"] = camp_title
+                t["time_label"] = time_label
                 t["updated_at"] = datetime.now().isoformat()
                 break
     else:
-        # Crea nuovo thread
         tid = str(uuid.uuid4())[:8]
         st.session_state["active_thread_id"] = tid
         threads.append({
             "id": tid, "title": auto_title,
-            "messages": messages, "created_at": datetime.now().isoformat(),
+            "messages": messages,
+            "camp_title": camp_title,
+            "time_label": time_label,
+            "created_at": datetime.now().isoformat(),
             "updated_at": datetime.now().isoformat()
         })
 
