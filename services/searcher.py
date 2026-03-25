@@ -1,4 +1,4 @@
-from ddgs import DDGS
+from duckduckgo_search import DDGS
 import time
 
 # Mapping tra label UI e timelimit DDGS
