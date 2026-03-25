@@ -23,153 +23,137 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Glass morphism JEMP UI (Brand Book 2024 + Premium Feel)
+# ChatGPT-style clean dark UI
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
-/* === BACKGROUND: warm amber dark gradient === */
+* { font-family: 'Inter', system-ui, -apple-system, sans-serif !important; box-sizing: border-box; }
+
+/* === MAIN BACKGROUND === */
 .stApp {
-    background: radial-gradient(ellipse at 20% 0%, #1a0f00 0%, #0d0800 40%, #070500 100%) !important;
-    color: #e8d9b0;
-    font-family: 'Inter', sans-serif;
+    background: #212121 !important;
+    color: #ececec !important;
 }
 
-/* === SIDEBAR: glass panel === */
+/* === SIDEBAR === */
 section[data-testid="stSidebar"] {
-    background: rgba(242, 142, 0, 0.04) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border-right: 1px solid rgba(242, 142, 0, 0.15) !important;
+    background: #171717 !important;
+    border-right: 1px solid #2d2d2d !important;
 }
 section[data-testid="stSidebar"] > div { background: transparent !important; }
 
 /* === HEADINGS === */
-h1,h2,h3,h4,h5 {
-    font-family: 'Barlow', sans-serif !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.3px;
-}
-h1 { color: #f28e00 !important; font-size: 1.55rem !important; }
-h2 { color: #fff !important; font-size: 1.25rem !important; }
-h3, h4, h5 { color: #e8d9b0 !important; }
+h1,h2,h3,h4,h5 { color: #ececec !important; font-weight: 600 !important; }
+h1 { font-size: 1.4rem !important; }
 
-/* === SIDEBAR LABELS === */
+/* === SIDEBAR SECTION LABELS === */
 .sidebar-section {
-    font-family: 'Barlow', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: rgba(242,142,0,0.5);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #8e8ea0;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding: 20px 4px 6px;
+    letter-spacing: 0.08em;
+    padding: 16px 4px 4px;
 }
 
 /* === BUTTONS === */
 .stButton > button {
-    background: linear-gradient(135deg, #f28e00, #f7aa01) !important;
-    color: #000 !important;
-    font-family: 'Barlow', sans-serif !important;
-    font-weight: 700 !important;
+    background: #2f2f2f !important;
+    color: #ececec !important;
+    font-weight: 500 !important;
     border-radius: 8px !important;
-    border: none !important;
-    box-shadow: 0 2px 12px rgba(242,142,0,0.25) !important;
-    transition: all 0.2s ease !important;
-    letter-spacing: 0.3px;
+    border: 1px solid #3d3d3d !important;
+    box-shadow: none !important;
+    transition: background 0.15s ease !important;
+    font-size: 0.875rem !important;
 }
 .stButton > button:hover {
-    background: linear-gradient(135deg, #f7aa01, #ffc107) !important;
-    box-shadow: 0 4px 20px rgba(242,142,0,0.4) !important;
-    transform: translateY(-1px);
+    background: #3d3d3d !important;
+    border-color: #4d4d4d !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
-/* === CHAT MESSAGES: glass bubbles === */
+/* === CHAT MESSAGES === */
 div[data-testid="stChatMessage"] {
-    border-radius: 12px !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    margin-bottom: 8px !important;
+    border-radius: 0 !important;
+    border: none !important;
+    padding: 12px 0 !important;
+    margin-bottom: 0 !important;
 }
 div[data-testid="stChatMessage"][data-role="user"] {
-    background: rgba(242, 142, 0, 0.08) !important;
-    border: 1px solid rgba(242, 142, 0, 0.2) !important;
+    background: transparent !important;
 }
 div[data-testid="stChatMessage"][data-role="assistant"] {
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(255,255,255,0.06) !important;
+    background: transparent !important;
 }
 
-/* === INPUTS: glass style === */
+/* === INPUTS === */
 div[data-baseweb="input"] > div {
-    background: rgba(255,255,255,0.05) !important;
-    color: #e8d9b0 !important;
-    border: 1px solid rgba(242,142,0,0.2) !important;
-    border-radius: 8px !important;
+    background: #2f2f2f !important;
+    color: #ececec !important;
+    border: 1px solid #3d3d3d !important;
+    border-radius: 10px !important;
 }
 textarea {
-    background: rgba(255,255,255,0.05) !important;
-    color: #e8d9b0 !important;
-    border: 1px solid rgba(242,142,0,0.2) !important;
-    border-radius: 8px !important;
-    font-family: 'Inter', sans-serif !important;
+    background: #2f2f2f !important;
+    color: #ececec !important;
+    border-radius: 10px !important;
 }
-input { font-family: 'Inter', sans-serif !important; color: #e8d9b0 !important; }
+input { color: #ececec !important; }
 
 /* === SELECTBOX === */
 div[data-baseweb="select"] > div {
-    background: rgba(255,255,255,0.05) !important;
-    color: #e8d9b0 !important;
-    border: 1px solid rgba(242,142,0,0.2) !important;
-    border-radius: 8px !important;
+    background: #2f2f2f !important;
+    color: #ececec !important;
+    border: 1px solid #3d3d3d !important;
+    border-radius: 10px !important;
 }
 
 /* === FORM LABELS === */
 .stSelectbox label, .stTextInput label, .stTextArea label {
-    font-family: 'Barlow', sans-serif !important;
-    font-weight: 600 !important;
-    color: #f28e00 !important;
-    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    color: #8e8ea0 !important;
+    font-size: 0.8rem !important;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
 }
 
-/* === CAMPAIGN CARD: glass === */
+/* === CAMPAIGN CARD === */
 .campaign-card {
-    background: rgba(242, 142, 0, 0.06);
-    padding: 18px 22px;
-    border-radius: 12px;
-    border: 1px solid rgba(242,142,0,0.2);
-    border-left: 3px solid #f28e00;
-    margin-bottom: 14px;
+    background: #2f2f2f;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 1px solid #3d3d3d;
+    border-left: 3px solid #10a37f;
+    margin-bottom: 12px;
 }
-.campaign-card h4 {
-    color: #f28e00 !important;
-    font-family: 'Barlow', sans-serif !important;
-    font-weight: 700 !important;
-    margin-top: 0;
-    font-size: 1rem !important;
-}
-.campaign-card p { color: rgba(232,217,176,0.7) !important; margin: 4px 0; font-size: 0.9rem; }
+.campaign-card h4 { color: #ececec !important; font-weight: 600 !important; margin-top: 0; }
+.campaign-card p { color: #8e8ea0 !important; margin: 4px 0; font-size: 0.88rem; }
 
 /* === CHAT INPUT === */
 div[data-testid="stChatInput"] {
-    background: rgba(242,142,0,0.05) !important;
-    border-top: 1px solid rgba(242,142,0,0.15) !important;
+    background: #212121 !important;
+    border-top: 1px solid #2d2d2d !important;
+    padding: 12px 0 !important;
 }
 div[data-testid="stChatInput"] textarea {
-    background: transparent !important;
-    border: 1px solid rgba(242,142,0,0.25) !important;
-    color: #e8d9b0 !important;
-    border-radius: 10px !important;
+    background: #2f2f2f !important;
+    border: 1px solid #3d3d3d !important;
+    color: #ececec !important;
+    border-radius: 12px !important;
+    font-size: 0.95rem !important;
 }
 
 /* === DIVIDERS === */
-hr { border-color: rgba(242,142,0,0.15) !important; }
+hr { border-color: #2d2d2d !important; }
 
 /* === MISC === */
-.stAlert { border-radius: 10px !important; }
-.stExpander { border: 1px solid rgba(242,142,0,0.15) !important; border-radius: 10px !important; }
-p, span, li { color: #e8d9b0 !important; }
+.stAlert { border-radius: 8px !important; background: #2f2f2f !important; }
+.stExpander { border: 1px solid #3d3d3d !important; border-radius: 8px !important; }
+p, li { color: #ececec !important; }
+span { color: inherit !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -183,33 +167,30 @@ def check_password():
 
     st.markdown("""
     <style>
-    .stApp {
-        background: radial-gradient(ellipse at 20% 0%, #1a0f00 0%, #0d0800 40%, #070500 100%) !important;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+    * { font-family: 'Inter', system-ui, sans-serif !important; }
+    .stApp { background: #212121 !important; }
     .login-wrap {
-        max-width: 380px;
-        margin: 100px auto 0;
-        padding: 44px 40px;
-        background: rgba(242, 142, 0, 0.06);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 16px;
-        border: 1px solid rgba(242, 142, 0, 0.25);
+        max-width: 360px;
+        margin: 120px auto 0;
+        padding: 40px 36px;
+        background: #2f2f2f;
+        border-radius: 12px;
+        border: 1px solid #3d3d3d;
         text-align: center;
     }
+    .login-logo { font-size: 2rem; margin-bottom: 14px; }
     .login-wrap h2 {
-        font-family: 'Barlow', sans-serif;
-        font-weight: 800;
-        color: #f28e00 !important;
-        font-size: 2.2rem;
-        margin-bottom: 4px;
-        letter-spacing: -1px;
+        font-weight: 600;
+        color: #ececec !important;
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+        letter-spacing: -0.3px;
     }
-    .login-wrap p { color: rgba(232,217,176,0.6) !important; font-size: 0.9rem; margin-bottom: 0; }
-    .login-logo { font-size: 2.5rem; margin-bottom: 12px; }
+    .login-wrap p { color: #8e8ea0 !important; font-size: 0.9rem; margin-bottom: 0; }
     </style>
     <div class="login-wrap">
-      <div class="login-logo">⬡</div>
+      <div class="login-logo">✦</div>
       <h2>JEMP Copilot</h2>
       <p>Area riservata JEMPer.<br>Inserisci la password per accedere.</p>
     </div>
