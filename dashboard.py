@@ -23,18 +23,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─────────────────────────────────────────────────────────────────────────────
-# GLOBAL CSS (Brand Book 2024: #f28e00 yellow, Barlow, Source Serif)
-# ─────────────────────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Source+Serif+4:wght@400;600&display=swap');
-
-/* Base */
-.stApp { background-color: #0a0a0a; color: #dbdcdb; font-family: 'Source Serif 4', Georgia, serif; }
-section[data-testid="stSidebar"] { background-color: #111111 !important; border-right: 1px solid #222; }
-
-/* Headings */
 # Glass morphism JEMP UI (Brand Book 2024 + Premium Feel)
 st.markdown("""
 <style>
@@ -45,7 +33,6 @@ st.markdown("""
     background: radial-gradient(ellipse at 20% 0%, #1a0f00 0%, #0d0800 40%, #070500 100%) !important;
     color: #e8d9b0;
     font-family: 'Inter', sans-serif;
-    min-height: 100vh;
 }
 
 /* === SIDEBAR: glass panel === */
@@ -95,20 +82,6 @@ h3, h4, h5 { color: #e8d9b0 !important; }
     box-shadow: 0 4px 20px rgba(242,142,0,0.4) !important;
     transform: translateY(-1px);
 }
-/* Delete / secondary buttons (🗑️ style) */
-.stButton > button[data-testid*="del_thread"] {
-    background: transparent !important;
-    color: rgba(242,142,0,0.4) !important;
-    box-shadow: none !important;
-    font-size: 0.9rem !important;
-    padding: 4px !important;
-}
-.stButton > button[data-testid*="del_thread"]:hover {
-    background: rgba(255,60,60,0.1) !important;
-    color: #ff6b6b !important;
-    box-shadow: none !important;
-    transform: none !important;
-}
 
 /* === CHAT MESSAGES: glass bubbles === */
 div[data-testid="stChatMessage"] {
@@ -132,7 +105,6 @@ div[data-baseweb="input"] > div {
     color: #e8d9b0 !important;
     border: 1px solid rgba(242,142,0,0.2) !important;
     border-radius: 8px !important;
-    backdrop-filter: blur(4px);
 }
 textarea {
     background: rgba(255,255,255,0.05) !important;
@@ -169,7 +141,6 @@ div[data-baseweb="select"] > div {
     border: 1px solid rgba(242,142,0,0.2);
     border-left: 3px solid #f28e00;
     margin-bottom: 14px;
-    backdrop-filter: blur(8px);
 }
 .campaign-card h4 {
     color: #f28e00 !important;
@@ -184,7 +155,6 @@ div[data-baseweb="select"] > div {
 div[data-testid="stChatInput"] {
     background: rgba(242,142,0,0.05) !important;
     border-top: 1px solid rgba(242,142,0,0.15) !important;
-    backdrop-filter: blur(12px);
 }
 div[data-testid="stChatInput"] textarea {
     background: transparent !important;
@@ -196,11 +166,9 @@ div[data-testid="stChatInput"] textarea {
 /* === DIVIDERS === */
 hr { border-color: rgba(242,142,0,0.15) !important; }
 
-/* === ALERTS/EXPANDERS === */
+/* === MISC === */
 .stAlert { border-radius: 10px !important; }
 .stExpander { border: 1px solid rgba(242,142,0,0.15) !important; border-radius: 10px !important; }
-
-/* Body text */
 p, span, li { color: #e8d9b0 !important; }
 </style>
 """, unsafe_allow_html=True)
