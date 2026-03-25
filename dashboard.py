@@ -217,22 +217,31 @@ with st.sidebar:
     threads = load_threads()
     if threads:
         st.markdown('<div class="sidebar-section">Thread Recenti</div>', unsafe_allow_html=True)
-        for t in reversed(threads[-20:]):   # mostra gli ultimi 20
-            is_active = st.session_state.get("active_thread_id") == t["id"]
+        for t in reversed(threads[-20:]):
             label = t.get("title", "Chat senza titolo")
-            label_short = label[:34] + "…" if len(label) > 35 else label
-            btn_style = "active" if is_active else ""
-            # Usiamo un pulsante custom via markdown + form trick
-            if st.button(f"🧵 {label_short}", key=f"thread_{t['id']}", use_container_width=True):
-                st.session_state["page"] = f"chat_{t['id']}"
-                st.session_state["active_thread_id"] = t["id"]
-                st.session_state["chat_messages"] = t.get("messages", [])
-                # Ripristina contesto campagna e timing salvati nel thread
-                if t.get("camp_title"):
-                    st.session_state["thread_camp"] = t["camp_title"]
-                if t.get("time_label"):
-                    st.session_state["thread_time"] = t["time_label"]
-                st.rerun()
+            label_short = label[:28] + "…" if len(label) > 29 else label
+            col_t, col_d = st.columns([5, 1])
+            with col_t:
+                if st.button(f"🧵 {label_short}", key=f"thread_{t['id']}", use_container_width=True):
+                    st.session_state["page"] = f"chat_{t['id']}"
+                    st.session_state["active_thread_id"] = t["id"]
+                    st.session_state["chat_messages"] = t.get("messages", [])
+                    if t.get("camp_title"):
+                        st.session_state["thread_camp"] = t["camp_title"]
+                    if t.get("time_label"):
+                        st.session_state["thread_time"] = t["time_label"]
+                    st.rerun()
+            with col_d:
+                if st.button("🗑", key=f"del_thread_{t['id']}", help="Elimina thread"):
+                    updated = [x for x in threads if x["id"] != t["id"]]
+                    save_threads(updated)
+                    # Se era il thread attivo, torna a nuova chat
+                    if st.session_state.get("active_thread_id") == t["id"]:
+                        st.session_state["page"] = "chat_new"
+                        st.session_state["chat_messages"] = []
+                        st.session_state["active_thread_id"] = None
+                    st.rerun()
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DASHBOARD CAMPAGNE PAGE
