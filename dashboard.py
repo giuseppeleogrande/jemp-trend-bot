@@ -35,56 +35,176 @@ st.markdown("""
 section[data-testid="stSidebar"] { background-color: #111111 !important; border-right: 1px solid #222; }
 
 /* Headings */
-h1,h2,h3,h4,h5 { font-family:'Barlow',sans-serif !important; font-weight:800 !important; color:#fff !important; }
-h1 { color:#f28e00 !important; font-size:1.6rem !important; }
+# Glass morphism JEMP UI (Brand Book 2024 + Premium Feel)
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Inter:wght@300;400;500&display=swap');
 
-/* Sidebar items */
-.sidebar-section { font-family:'Barlow',sans-serif; font-size:0.72rem; font-weight:700;
-  color:#58575c; text-transform:uppercase; letter-spacing:1px; padding:16px 8px 4px; }
-.thread-btn { display:block; width:100%; text-align:left; background:none; border:none;
-  color:#aaa9ac; font-family:'Source Serif 4',Georgia,serif; font-size:0.88rem;
-  padding:8px 12px; cursor:pointer; border-radius:6px; transition:background 0.15s; }
-.thread-btn:hover { background:#1e1e1e; color:#fff; }
-.thread-btn.active { background:#1e1e1e; color:#f28e00 !important; border-left:3px solid #f28e00; }
+/* === BACKGROUND: warm amber dark gradient === */
+.stApp {
+    background: radial-gradient(ellipse at 20% 0%, #1a0f00 0%, #0d0800 40%, #070500 100%) !important;
+    color: #e8d9b0;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
 
-/* Buttons */
-.stButton>button { background:#f28e00 !important; color:#000 !important;
-  font-family:'Barlow',sans-serif !important; font-weight:700 !important;
-  border-radius:6px !important; border:none !important; box-shadow:none !important; }
-.stButton>button:hover { background:#f7aa01 !important; }
-button[kind="secondary"] { background:#191b20 !important; color:#dbdcdb !important; }
+/* === SIDEBAR: glass panel === */
+section[data-testid="stSidebar"] {
+    background: rgba(242, 142, 0, 0.04) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-right: 1px solid rgba(242, 142, 0, 0.15) !important;
+}
+section[data-testid="stSidebar"] > div { background: transparent !important; }
 
-/* Chat messages */
-div[data-testid="stChatMessage"] { border-radius:8px; }
-div[data-testid="stChatMessage"][data-role="user"] { background:#1a1a0a; }
-div[data-testid="stChatMessage"][data-role="assistant"] { background:#111518; }
+/* === HEADINGS === */
+h1,h2,h3,h4,h5 {
+    font-family: 'Barlow', sans-serif !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.3px;
+}
+h1 { color: #f28e00 !important; font-size: 1.55rem !important; }
+h2 { color: #fff !important; font-size: 1.25rem !important; }
+h3, h4, h5 { color: #e8d9b0 !important; }
 
-/* Inputs */
-div[data-baseweb="input"]>div, textarea {
-  background:#191b20 !important; color:#dbdcdb !important; border:1px solid #36373c !important; }
-input { font-family:'Source Serif 4',Georgia,serif !important; }
+/* === SIDEBAR LABELS === */
+.sidebar-section {
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(242,142,0,0.5);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 20px 4px 6px;
+}
 
-/* Dividers */
-hr { border-color:#222 !important; }
+/* === BUTTONS === */
+.stButton > button {
+    background: linear-gradient(135deg, #f28e00, #f7aa01) !important;
+    color: #000 !important;
+    font-family: 'Barlow', sans-serif !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: 0 2px 12px rgba(242,142,0,0.25) !important;
+    transition: all 0.2s ease !important;
+    letter-spacing: 0.3px;
+}
+.stButton > button:hover {
+    background: linear-gradient(135deg, #f7aa01, #ffc107) !important;
+    box-shadow: 0 4px 20px rgba(242,142,0,0.4) !important;
+    transform: translateY(-1px);
+}
+/* Delete / secondary buttons (🗑️ style) */
+.stButton > button[data-testid*="del_thread"] {
+    background: transparent !important;
+    color: rgba(242,142,0,0.4) !important;
+    box-shadow: none !important;
+    font-size: 0.9rem !important;
+    padding: 4px !important;
+}
+.stButton > button[data-testid*="del_thread"]:hover {
+    background: rgba(255,60,60,0.1) !important;
+    color: #ff6b6b !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
 
-/* Campaign card */
-.campaign-card { background:#191b20; padding:18px 22px; border-radius:8px;
-  border-left:4px solid #f28e00; margin-bottom:14px; }
-.campaign-card h4 { color:#f28e00 !important; font-family:'Barlow',sans-serif !important;
-  font-weight:700 !important; margin-top:0; }
-.campaign-card p { color:#aaa9ac !important; margin:4px 0; }
+/* === CHAT MESSAGES: glass bubbles === */
+div[data-testid="stChatMessage"] {
+    border-radius: 12px !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    margin-bottom: 8px !important;
+}
+div[data-testid="stChatMessage"][data-role="user"] {
+    background: rgba(242, 142, 0, 0.08) !important;
+    border: 1px solid rgba(242, 142, 0, 0.2) !important;
+}
+div[data-testid="stChatMessage"][data-role="assistant"] {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+}
 
-/* Form */
+/* === INPUTS: glass style === */
+div[data-baseweb="input"] > div {
+    background: rgba(255,255,255,0.05) !important;
+    color: #e8d9b0 !important;
+    border: 1px solid rgba(242,142,0,0.2) !important;
+    border-radius: 8px !important;
+    backdrop-filter: blur(4px);
+}
+textarea {
+    background: rgba(255,255,255,0.05) !important;
+    color: #e8d9b0 !important;
+    border: 1px solid rgba(242,142,0,0.2) !important;
+    border-radius: 8px !important;
+    font-family: 'Inter', sans-serif !important;
+}
+input { font-family: 'Inter', sans-serif !important; color: #e8d9b0 !important; }
+
+/* === SELECTBOX === */
+div[data-baseweb="select"] > div {
+    background: rgba(255,255,255,0.05) !important;
+    color: #e8d9b0 !important;
+    border: 1px solid rgba(242,142,0,0.2) !important;
+    border-radius: 8px !important;
+}
+
+/* === FORM LABELS === */
 .stSelectbox label, .stTextInput label, .stTextArea label {
-  font-family:'Barlow',sans-serif !important; font-weight:600 !important; color:#fff !important; }
+    font-family: 'Barlow', sans-serif !important;
+    font-weight: 600 !important;
+    color: #f28e00 !important;
+    font-size: 0.85rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-/* Chat input */
-div[data-testid="stChatInput"] textarea { background:#191b20 !important; }
+/* === CAMPAIGN CARD: glass === */
+.campaign-card {
+    background: rgba(242, 142, 0, 0.06);
+    padding: 18px 22px;
+    border-radius: 12px;
+    border: 1px solid rgba(242,142,0,0.2);
+    border-left: 3px solid #f28e00;
+    margin-bottom: 14px;
+    backdrop-filter: blur(8px);
+}
+.campaign-card h4 {
+    color: #f28e00 !important;
+    font-family: 'Barlow', sans-serif !important;
+    font-weight: 700 !important;
+    margin-top: 0;
+    font-size: 1rem !important;
+}
+.campaign-card p { color: rgba(232,217,176,0.7) !important; margin: 4px 0; font-size: 0.9rem; }
 
-/* Selectbox */
-div[data-baseweb="select"] div { background:#191b20 !important; color:#dbdcdb !important; }
+/* === CHAT INPUT === */
+div[data-testid="stChatInput"] {
+    background: rgba(242,142,0,0.05) !important;
+    border-top: 1px solid rgba(242,142,0,0.15) !important;
+    backdrop-filter: blur(12px);
+}
+div[data-testid="stChatInput"] textarea {
+    background: transparent !important;
+    border: 1px solid rgba(242,142,0,0.25) !important;
+    color: #e8d9b0 !important;
+    border-radius: 10px !important;
+}
+
+/* === DIVIDERS === */
+hr { border-color: rgba(242,142,0,0.15) !important; }
+
+/* === ALERTS/EXPANDERS === */
+.stAlert { border-radius: 10px !important; }
+.stExpander { border: 1px solid rgba(242,142,0,0.15) !important; border-radius: 10px !important; }
+
+/* Body text */
+p, span, li { color: #e8d9b0 !important; }
 </style>
 """, unsafe_allow_html=True)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # LOGIN
@@ -95,14 +215,33 @@ def check_password():
 
     st.markdown("""
     <style>
-    .stApp { background:#000; }
-    .login-wrap { max-width:400px; margin:80px auto 0; padding:40px 36px;
-      background:#191b20; border-radius:12px; border-top:4px solid #f28e00; text-align:center; }
-    .login-wrap h2 { font-family:'Barlow',sans-serif; font-weight:800;
-      color:#f28e00 !important; font-size:2rem; margin-bottom:6px; }
-    .login-wrap p { color:#7e7d81 !important; font-size:0.95rem; margin-bottom:20px; }
+    .stApp {
+        background: radial-gradient(ellipse at 20% 0%, #1a0f00 0%, #0d0800 40%, #070500 100%) !important;
+    }
+    .login-wrap {
+        max-width: 380px;
+        margin: 100px auto 0;
+        padding: 44px 40px;
+        background: rgba(242, 142, 0, 0.06);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 16px;
+        border: 1px solid rgba(242, 142, 0, 0.25);
+        text-align: center;
+    }
+    .login-wrap h2 {
+        font-family: 'Barlow', sans-serif;
+        font-weight: 800;
+        color: #f28e00 !important;
+        font-size: 2.2rem;
+        margin-bottom: 4px;
+        letter-spacing: -1px;
+    }
+    .login-wrap p { color: rgba(232,217,176,0.6) !important; font-size: 0.9rem; margin-bottom: 0; }
+    .login-logo { font-size: 2.5rem; margin-bottom: 12px; }
     </style>
     <div class="login-wrap">
+      <div class="login-logo">⬡</div>
       <h2>JEMP Copilot</h2>
       <p>Area riservata JEMPer.<br>Inserisci la password per accedere.</p>
     </div>
