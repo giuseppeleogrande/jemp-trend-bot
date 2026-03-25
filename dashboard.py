@@ -385,14 +385,20 @@ def render_chat():
         with st.chat_message("user", avatar="👤"):
             st.markdown(prompt)
 
-        # Scarica trend se necessario
-        trends = []
-        if timelimit is not None:
+        # Trend: cache per sessione (fetch solo la prima volta o se cambia il timeframe)
+        cache_key = f"trends_{timelimit}"
+        if timelimit is None:
+            trends = []
+        elif cache_key not in st.session_state:
             with st.spinner(f"🌐 Ricerca web in corso ({selected_time_label.lower()})..."):
                 try:
                     trends = get_weekly_trends(timelimit=timelimit)
+                    st.session_state[cache_key] = trends
                 except Exception as e:
                     st.warning(f"Ricerca web non riuscita: {e}. Continuo senza dati web.")
+                    trends = []
+        else:
+            trends = st.session_state[cache_key]
 
         # AI response
         with st.chat_message("assistant", avatar="🟡"):
