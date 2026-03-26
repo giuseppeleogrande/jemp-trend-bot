@@ -1,7 +1,7 @@
 slack_sdk
 # google-generativeai (Rimosso a causa dei blocchi bancari in EU)
 groq
-ddgs
+duckduckgo-search
 python-dotenv
 streamlit
 pyyaml
